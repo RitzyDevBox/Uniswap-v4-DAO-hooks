@@ -40,6 +40,13 @@ open up the settings and type solidity the modify the settings.json
  
   `forge test`
 
+# Generate Remappings File:
+
+   `forge remappings > remappings.txt`
+
+# For more indepth examples 
+  see: `lib\v4-core\test\foundry-tests\PoolManager.t.sol`
+
 # Foundry Cheat Sheet
 
 Essential Cheat Codes – Full list here: https://github.com/foundry-rs/forge-std/blob/master/src/Vm.sol
