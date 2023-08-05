@@ -37,8 +37,10 @@ open up the settings and type solidity the modify the settings.json
   `forge build`
   
 # Run the tests:
- 
+Note: keep in mind when creating tests that they must start with the test for forge to pick them up in forge test
+
   `forge test`
+
 
 # Generate Remappings File:
 

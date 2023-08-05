@@ -7,15 +7,21 @@ import {IPoolManager} from "@v4-core/interfaces/IPoolManager.sol";
 import {PoolKey} from "@v4-core/types/PoolKey.sol";
 import {BalanceDelta} from "@v4-core/types/BalanceDelta.sol";
 
-
-
+//Note: Only before hooks need to be gated since, there should be no way to get to an after hook without hitting the before prior
 contract GatedHooks is IHooks {
 
     IERC721 internal membershipNFT;
+    
+    uint256 public INITIALIZE_THRESHOLD = 5;
+    uint256 public MODIFY_POSITION_THRESHOLD = 2;
+    uint256 public SWAP_THRESHOLD = 1;
+    uint256 public DONATE_THRESHOLD = 1;
 
+    // we leverage the threshold modifier on each hook with dynamic amounts
+    // if you just want to gate access, you can probably do it at the pool level
     modifier onlyMembersWithThreshold(uint256 threshold) {
         require(
-            membershipNFT.balanceOf(msg.sender) > threshold,
+            membershipNFT.balanceOf(msg.sender) >= threshold,
             "This action requires members who match or exceed balance threshold"
         );
         _;
@@ -25,7 +31,7 @@ contract GatedHooks is IHooks {
         membershipNFT = _membershiptNFT;
     }
     
-    function beforeInitialize(address, PoolKey memory, uint160) external view override onlyMembersWithThreshold(5) returns (bytes4) {
+    function beforeInitialize(address, PoolKey memory, uint160) external view override onlyMembersWithThreshold(INITIALIZE_THRESHOLD) returns (bytes4) {
         return IHooks.beforeInitialize.selector;
     }
 
@@ -37,7 +43,7 @@ contract GatedHooks is IHooks {
         external
         view
         override
-        onlyMembersWithThreshold(2)
+        onlyMembersWithThreshold(MODIFY_POSITION_THRESHOLD)
         returns (bytes4)
     {
         return IHooks.beforeModifyPosition.selector;
@@ -56,7 +62,7 @@ contract GatedHooks is IHooks {
         external
         view
         override
-        onlyMembersWithThreshold(1)
+        onlyMembersWithThreshold(SWAP_THRESHOLD)
         returns (bytes4)
     {
         return IHooks.beforeSwap.selector;
@@ -71,14 +77,12 @@ contract GatedHooks is IHooks {
         return IHooks.afterSwap.selector;
     }
 
-    function beforeDonate(address, PoolKey calldata, uint256, uint256) external view override onlyMembersWithThreshold(1) returns (bytes4) {
+    function beforeDonate(address, PoolKey calldata, uint256, uint256) external view override onlyMembersWithThreshold(DONATE_THRESHOLD) returns (bytes4) {
         return IHooks.beforeDonate.selector;
     }
 
     function afterDonate(address, PoolKey calldata, uint256, uint256) external pure override returns (bytes4) {
         return IHooks.afterDonate.selector;
-    }
-
-    
+    }    
 }
 
