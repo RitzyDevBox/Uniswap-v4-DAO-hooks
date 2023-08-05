@@ -2,5 +2,6 @@
 src = "src"
 out = "out"
 libs = ["lib"]
+remappings = ["@openzeppelin=lib/openzeppelin-contracts", "@uniswapv4core=lib/v4-core/contracts"]
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config
